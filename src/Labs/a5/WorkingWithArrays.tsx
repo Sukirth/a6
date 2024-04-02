@@ -25,7 +25,7 @@ function WorkingWithArrays() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const postTodo = async () => {
-    const response = await axios.post<Todo[]>(API!, todo);
+    const response = await axios.post<Todo[]>(TODO_API, todo);
     setTodos([...todos, ...response.data]);
   };
 
@@ -74,21 +74,21 @@ function WorkingWithArrays() {
   };
 
   const removeTodo = async (todo: { id: any; title?: string }) => {
-    const response = await axios.get(`${API}/${todo.id}/delete`);
+    const response = await axios.get(`${TODO_API}/${todo.id}/delete`);
     setTodos(response.data);
   };
 
   const createTodo = async () => {
-    const response = await axios.get(`${API}/create`);
+    const response = await axios.get(`${TODO_API}/create`);
     setTodos(response.data);
   };
 
   const fetchTodoById = async (id: number) => {
-    const response = await axios.get(`${API}/${id}`);
+    const response = await axios.get(`${TODO_API}/${id}`);
     setTodo(response.data);
   };
   const updateTitle = async () => {
-    const response = await axios.get(`${API}/${todo.id}/title/${todo.title}`);
+    const response = await axios.get(`${TODO_API}/${todo.id}`);
     setTodos(response.data);
   };
 
@@ -164,7 +164,7 @@ function WorkingWithArrays() {
       <button onClick={updateTodo}> Update Todo </button>
 
       <h3>Retrieving Arrays</h3>
-      <a className="btn btn-primary" href={API}>
+      <a className="btn btn-primary" href={TODO_API}>
         Get Todos
       </a>
 
@@ -173,22 +173,22 @@ function WorkingWithArrays() {
         value={todo.id}
         onChange={(e) => setTodo({ ...todo, id: parseInt(e.target.value) })}
       />
-      <a className="btn btn-primary" href={`${API}/${todo.id}`}>
+      <a className="btn btn-primary" href={`${TODO_API}/${todo.id}`}>
         Get Todo by ID
       </a>
 
       <h3>Filtering Array Items</h3>
-      <a className="btn btn-primary" href={`${API}?completed=true`}>
+      <a className="btn btn-primary" href={`${TODO_API}?completed=true`}>
         Get Completed Todos
       </a>
 
       <h3>Creating new Items in an Array</h3>
-      <a className="btn btn-primary" href={`${API}/create`}>
+      <a className="btn btn-primary" href={`${TODO_API}/create`}>
         Create Todo
       </a>
 
       <h3>Deleting from an Array</h3>
-      <a className="btn btn-primary" href={`${API}/${todo.id}/delete`}>
+      <a className="btn btn-primary" href={`${TODO_API}/${todo.id}`}>
         Delete Todo with ID = {todo.id}
       </a>
 
@@ -208,7 +208,7 @@ function WorkingWithArrays() {
       <br />
       <a
         className="btn btn-primary"
-        href={`${API}/${todo.id}/title/${todo.title}`}
+        href={`${TODO_API}/${todo.id}/title/${todo.title}`}
       >
         Update Title to {todo.title}
       </a>
@@ -240,7 +240,7 @@ function WorkingWithArrays() {
       <br />
       <a
         className="btn btn-primary"
-        href={`${API}/${todo.id}/completed/${todo.completed}`}
+        href={`${TODO_API}/${todo.id}/completed/${todo.completed}`}
       >
         Change Completion Status
       </a>
@@ -248,7 +248,7 @@ function WorkingWithArrays() {
       <br />
       <a
         className="btn btn-primary"
-        href={`${API}/${todo.id}/description/${todo.description}`}
+        href={`${TODO_API}/${todo.id}/description/${todo.description}`}
       >
         Change Description
       </a>
