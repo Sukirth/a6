@@ -1,9 +1,11 @@
-import { useNavigate, useParams } from 'react-router';
-import { FaCheckCircle, FaEllipsisV } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { setAssignment, addAssignment, updateAssignment } from '../reducer';
-import { KanbasState } from '../../../store';
+import { useNavigate, useParams } from "react-router";
+import { FaCheckCircle, FaEllipsisV } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { setAssignment, addAssignment, updateAssignment } from "../reducer";
+import { KanbasState } from "../../../store";
+import * as client from "../client";
+import { Assignment } from "../../../../types";
 
 function AssignmentEditor() {
   const { courseId } = useParams();
@@ -18,15 +20,22 @@ function AssignmentEditor() {
   );
 
   const isEditing =
-    assignmentList.findIndex(a => a._id === assignment._id) !== -1;
+    assignmentList.findIndex((a) => a._id === assignment._id) !== -1;
 
   const navigate = useNavigate();
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!courseId) return;
     if (isEditing) {
-      dispatch(updateAssignment(assignment));
+      client.updateAssignment(assignment).then((response: Assignment) => {
+        dispatch(updateAssignment(response));
+      });
     } else {
-      dispatch(addAssignment({ ...assignment, course: courseId }));
+      client
+        .createAssignment(courseId, assignment)
+        .then((response: Assignment) => {
+          dispatch(addAssignment({ ...response, course: courseId }));
+        });
     }
 
     navigate(`/Kanbas/Courses/${courseId}/Assignments`);
@@ -55,7 +64,7 @@ function AssignmentEditor() {
             id="assignment-name"
             placeholder={assignment?.name}
             value={assignment?.name}
-            onChange={e =>
+            onChange={(e) =>
               dispatch(setAssignment({ ...assignment, name: e.target.value }))
             }
           />
@@ -67,7 +76,7 @@ function AssignmentEditor() {
             rows={4}
             placeholder="Assignment description goes here"
             value={assignment?.description}
-            onChange={e =>
+            onChange={(e) =>
               dispatch(
                 setAssignment({ ...assignment, description: e.target.value })
               )
@@ -90,7 +99,7 @@ function AssignmentEditor() {
                 id="assignment-points"
                 placeholder="100"
                 value={assignment?.totalPoints}
-                onChange={e =>
+                onChange={(e) =>
                   dispatch(
                     setAssignment({ ...assignment, points: e.target.value })
                   )
@@ -178,11 +187,11 @@ function AssignmentEditor() {
                     className="form-control"
                     id="assignment-due"
                     value={assignment?.dueDate}
-                    onChange={e =>
+                    onChange={(e) =>
                       dispatch(
                         setAssignment({
                           ...assignment,
-                          dueDate: e.target.value
+                          dueDate: e.target.value,
                         })
                       )
                     }
@@ -200,12 +209,12 @@ function AssignmentEditor() {
                       type="datetime-local"
                       className="form-control"
                       id="assignment-available"
-                      value={assignment?.availableFromDate ?? ''}
-                      onChange={e =>
+                      value={assignment?.availableFromDate ?? ""}
+                      onChange={(e) =>
                         dispatch(
                           setAssignment({
                             ...assignment,
-                            availableFromDate: e.target.value
+                            availableFromDate: e.target.value,
                           })
                         )
                       }
@@ -222,12 +231,12 @@ function AssignmentEditor() {
                       type="datetime-local"
                       className="form-control"
                       id="assignment-until"
-                      value={assignment?.availableUntilDate ?? ''}
-                      onChange={e =>
+                      value={assignment?.availableUntilDate ?? ""}
+                      onChange={(e) =>
                         dispatch(
                           setAssignment({
                             ...assignment,
-                            availableUntilDate: e.target.value
+                            availableUntilDate: e.target.value,
                           })
                         )
                       }
@@ -236,8 +245,8 @@ function AssignmentEditor() {
                 </div>
                 <div className="row mt-2">
                   <button type="button" className="btn btn-light rounded-0">
-                    {' '}
-                    + Add{' '}
+                    {" "}
+                    + Add{" "}
                   </button>
                 </div>
               </div>

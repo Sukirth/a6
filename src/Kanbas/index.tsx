@@ -5,14 +5,15 @@ import { Provider } from "react-redux";
 import Dashboard from "./Dashboard";
 import Courses from "./Courses";
 import { useEffect, useState } from "react";
-import db from "./Database";
 import { Course } from "../types";
 import axios from "axios";
+
+const API_BASE = process.env.REACT_APP_API_BASE;
 
 function Kanbas() {
   const [courses, setCourses] = useState<Course[]>([]);
 
-  const COURSES_API = "http://localhost:4000/api/courses";
+  const COURSES_API = `${API_BASE}/api/courses`;
   const findAllCourses = async () => {
     const response = await axios.get(COURSES_API);
     setCourses(response.data);

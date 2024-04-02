@@ -1,18 +1,20 @@
-import { useNavigate, useParams } from 'react-router';
-import { FaEllipsisV, FaCheckCircle } from 'react-icons/fa';
-import { PiNotePencil } from 'react-icons/pi';
-import { CiSearch } from 'react-icons/ci';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { KanbasState } from '../../store';
-import { Assignment } from '../../../types';
+import { useNavigate, useParams } from "react-router";
+import { FaEllipsisV, FaCheckCircle } from "react-icons/fa";
+import { PiNotePencil } from "react-icons/pi";
+import { CiSearch } from "react-icons/ci";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { KanbasState } from "../../store";
+import { Assignment } from "../../../types";
 import {
   deleteAssignment,
   setAssignment,
-  initialState as initialAssignmentState
-} from './reducer';
-import { useState } from 'react';
-import './index.css';
+  initialState as initialAssignmentState,
+  setAssignments,
+} from "./reducer";
+import { useEffect, useState } from "react";
+import * as client from "./client";
+import "./index.css";
 
 function Assignments() {
   const { courseId } = useParams();
@@ -20,16 +22,24 @@ function Assignments() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (!courseId) return;
+
+    client.findAssignmentsForCourse(courseId).then((assignments) => {
+      dispatch(setAssignments(assignments));
+    });
+  }, []);
+
   const assignmentList = useSelector(
     (state: KanbasState) => state.assignmentsReducer.assignments
   );
 
   const filteredAssignments = assignmentList.filter(
-    assignment => assignment.course === courseId
+    (assignment) => assignment.course === courseId
   );
 
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedAssignment, setSelectedAssignment] = useState<string>('');
+  const [selectedAssignment, setSelectedAssignment] = useState<string>("");
 
   const handleShowDialog = () => {
     setShowDialog(true);
@@ -44,9 +54,11 @@ function Assignments() {
     navigate(`/Kanbas/Courses/${courseId}/Assignments/${assignment._id}`);
   };
 
-  const confirmDelete = () => {
-    dispatch(deleteAssignment(selectedAssignment));
-    setShowDialog(false);
+  const handleDeleteModule = () => {
+    client.deleteAssignment(selectedAssignment).then((status) => {
+      dispatch(deleteAssignment(selectedAssignment));
+      handleCloseDialog();
+    });
   };
 
   const createAssignment = () => {
@@ -100,7 +112,7 @@ function Assignments() {
                 </span>
               </div>
               <ul className="list-group">
-                {filteredAssignments.map(assignment => {
+                {filteredAssignments.map((assignment) => {
                   return (
                     <li
                       key={assignment._id}
@@ -136,13 +148,13 @@ function Assignments() {
                                 <span>
                                   <span className="fw-bold">
                                     Not available until
-                                  </span>{' '}
+                                  </span>{" "}
                                   {assignment.availableFromDate}
                                   <span className="fw-normal fs-16"> | </span>
                                 </span>
                               )}
                               <span className="fw-bold"> Due</span>
-                              {' ' + assignment.dueDate}
+                              {" " + assignment.dueDate}
                               <span className="fw-normal fs-16"> | </span>
                               {assignment.totalPoints} pts
                             </span>
@@ -206,7 +218,7 @@ function Assignments() {
                 <button
                   type="button"
                   className="btn btn-danger"
-                  onClick={confirmDelete}
+                  onClick={handleDeleteModule}
                 >
                   Delete
                 </button>

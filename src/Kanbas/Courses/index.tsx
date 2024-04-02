@@ -16,9 +16,11 @@ import { KanbasState } from "../store";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE = process.env.REACT_APP_API_BASE;
+
 function Courses({ courses }: { courses: Course[] }) {
   const { courseId } = useParams();
-  const COURSES_API = "http://localhost:4000/api/courses";
+  const COURSES_API = `${API_BASE}/api/courses`;
 
   const [course, setCourse] = useState<Course>({
     _id: "",
