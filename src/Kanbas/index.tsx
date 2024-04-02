@@ -1,25 +1,37 @@
-import KanbasNavigation from './Navigation';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import store from './store';
-import { Provider } from 'react-redux';
-import Dashboard from './Dashboard';
-import Courses from './Courses';
-import { useState } from 'react';
-import db from './Database';
-import { Course } from '../types';
+import KanbasNavigation from "./Navigation";
+import { Routes, Route, Navigate } from "react-router-dom";
+import store from "./store";
+import { Provider } from "react-redux";
+import Dashboard from "./Dashboard";
+import Courses from "./Courses";
+import { useEffect, useState } from "react";
+import db from "./Database";
+import { Course } from "../types";
+import axios from "axios";
 
 function Kanbas() {
-  const [courses, setCourses] = useState<Course[]>(db.courses);
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  const COURSES_API = "http://localhost:4000/api/courses";
+  const findAllCourses = async () => {
+    const response = await axios.get(COURSES_API);
+    setCourses(response.data);
+  };
+
+  useEffect(() => {
+    findAllCourses();
+  }, []);
+
   const [course, setCourse] = useState({
-    _id: '1234',
-    name: 'New Course',
-    number: 'New Number',
-    startDate: '2023-09-10',
-    endDate: '2023-12-15',
-    image: 'default.png'
+    _id: "1234",
+    name: "New Course",
+    number: "New Number",
+    startDate: "2023-09-10",
+    endDate: "2023-12-15",
+    image: "default.png",
   });
 
-  const addNewCourse = () => {
+  const addNewCourse = async () => {
     const totalNoOfCourses = courses.length;
     const commonText = `2042${(totalNoOfCourses + 1) * 10}`;
     const cardText = `${course.number}_12631_${commonText}`;
@@ -27,31 +39,37 @@ function Kanbas() {
       ...course,
       _id: new Date().getTime().toString(),
       cardText,
-      cardSubText: `${commonText}_1 Fall Semester Full Term`
+      cardSubText: `${commonText}_1 Fall Semester Full Term`,
     };
 
-    setCourses(prevCourses => [...prevCourses, newCourse]);
+    const response = await axios.post(COURSES_API, newCourse);
+    setCourses([...courses, response.data]);
   };
 
-  const deleteCourse = (courseId: string) => {
-    setCourses(courses.filter(course => course._id !== courseId));
+  const deleteCourse = async (courseId: string) => {
+    await axios.delete(`${COURSES_API}/${courseId}`);
+    setCourses(courses.filter((course) => course._id !== courseId));
   };
 
-  const updateCourse = () => {
+  const updateCourse = async () => {
+    const totalNoOfCourses = courses.length;
+    const commonText = `2042${(totalNoOfCourses + 1) * 10}`;
+    const cardText = `${course.number}_12631_${commonText}`;
+
+    const updatedCourse = {
+      ...course,
+      cardText,
+      cardSubText: `${commonText}_1 Fall Semester Full Term`,
+    };
+
+    await axios.put(`${COURSES_API}/${course._id}`, updatedCourse);
+
     setCourses(
-      courses.map(c => {
+      courses.map((c) => {
         if (c._id === course._id) {
-          const totalNoOfCourses = courses.length;
-          const commonText = `2042${(totalNoOfCourses + 1) * 10}`;
-          const cardText = `${course.number}_12631_${commonText}`;
-          return {
-            ...course,
-            cardText,
-            cardSubText: `${commonText}_1 Fall Semester Full Term`
-          };
-        } else {
-          return c;
+          return updatedCourse;
         }
+        return c;
       })
     );
   };

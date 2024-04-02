@@ -1,43 +1,63 @@
-import { Navigate, Route, Routes, useParams } from 'react-router';
-import { HiMiniBars3 } from 'react-icons/hi2';
-import { PiEyeglasses } from 'react-icons/pi';
-import { Link } from 'react-router-dom';
-import CourseNavigation from './Navigation';
-import CollapsedNav from './Navigation/CollapsedNav';
-import Home from './Home';
-import Modules from './Modules';
-import Assignments from './Assignments';
-import AssignmentEditor from './Assignments/Editor';
-import Grades from './Grades';
-import './index.css';
-import { Course } from '../../types';
-import { useSelector } from 'react-redux';
-import { KanbasState } from '../store';
+import { Navigate, Route, Routes, useParams } from "react-router";
+import { HiMiniBars3 } from "react-icons/hi2";
+import { PiEyeglasses } from "react-icons/pi";
+import { Link } from "react-router-dom";
+import CourseNavigation from "./Navigation";
+import CollapsedNav from "./Navigation/CollapsedNav";
+import Home from "./Home";
+import Modules from "./Modules";
+import Assignments from "./Assignments";
+import AssignmentEditor from "./Assignments/Editor";
+import Grades from "./Grades";
+import "./index.css";
+import { Course } from "../../types";
+import { useSelector } from "react-redux";
+import { KanbasState } from "../store";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Courses({ courses }: { courses: Course[] }) {
   const { courseId } = useParams();
-  const course = courses.find(course => course._id === courseId);
+  const COURSES_API = "http://localhost:4000/api/courses";
+
+  const [course, setCourse] = useState<Course>({
+    _id: "",
+    name: "",
+    number: "",
+    startDate: "",
+    endDate: "",
+    image: "",
+  });
+
+  const findCourseById = async (courseId?: string) => {
+    const response = await axios.get(`${COURSES_API}/${courseId}`);
+    setCourse(response.data);
+  };
+
+  useEffect(() => {
+    findCourseById(courseId);
+  }, [courseId]);
 
   const assignmentList = useSelector(
     (state: KanbasState) => state.assignmentsReducer.assignments
   );
 
-  let assignmentTitle = '';
+  let assignmentTitle = "";
   const href = decodeURIComponent(window.location.href);
-  const splitHref = href.split('/');
+  const splitHref = href.split("/");
 
-  if (splitHref.at(-2) === 'Assignments') {
+  if (splitHref.at(-2) === "Assignments") {
     const assignmentId = splitHref.at(-1);
     const assignment = assignmentList.find(
-      assignment => assignment._id === assignmentId
+      (assignment) => assignment._id === assignmentId
     );
-    assignmentTitle = assignment?.name ?? 'Create new';
+    assignmentTitle = assignment?.name ?? "Create new";
   }
 
   const breadcrumbText =
-    splitHref.at(-1) === 'Home'
-      ? ['Modules']
-      : splitHref.at(-2) === 'Assignments'
+    splitHref.at(-1) === "Home"
+      ? ["Modules"]
+      : splitHref.at(-2) === "Assignments"
       ? [splitHref.at(-2), assignmentTitle]
       : [splitHref.at(-1)];
 
@@ -60,7 +80,7 @@ function Courses({ courses }: { courses: Course[] }) {
                 {course?.name}
               </Link>
             </li>
-            {breadcrumbText.map(text => (
+            {breadcrumbText.map((text) => (
               <li key={text} className="breadcrumb-item">
                 {text}
               </li>
@@ -88,7 +108,7 @@ function Courses({ courses }: { courses: Course[] }) {
             <Route path="Grades" element={<Grades />} />
             <Route
               path="*"
-              element={breadcrumbText.map(text => {
+              element={breadcrumbText.map((text) => {
                 return (
                   <h1 className="mt-5" key={text}>
                     {text}
