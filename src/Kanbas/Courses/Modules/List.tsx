@@ -1,19 +1,34 @@
-import { useState } from 'react';
-import { FaEllipsisV, FaCheckCircle } from 'react-icons/fa';
-import { CiCircleCheck } from 'react-icons/ci';
-import { HiChevronDown, HiChevronRight } from 'react-icons/hi';
-import { GoPlus } from 'react-icons/go';
-import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { addModule, deleteModule, updateModule, setModule } from './reducer';
-import { KanbasState } from '../../store';
+import { useEffect, useState } from "react";
+import { FaEllipsisV, FaCheckCircle } from "react-icons/fa";
+import { CiCircleCheck } from "react-icons/ci";
+import { HiChevronDown, HiChevronRight } from "react-icons/hi";
+import { GoPlus } from "react-icons/go";
+import { useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addModule,
+  deleteModule,
+  updateModule,
+  setModule,
+  setModules,
+} from "./reducer";
+import { KanbasState } from "../../store";
+import * as client from "./client";
 
-import './index.css';
+import "./index.css";
 
 function ModuleList() {
   const { courseId } = useParams();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!courseId) return;
+
+    client.findModulesForCourse(courseId).then((modules) => {
+      dispatch(setModules(modules));
+    });
+  }, []);
 
   const moduleList = useSelector(
     (state: KanbasState) => state.modulesReducer.modules
@@ -21,6 +36,24 @@ function ModuleList() {
   const module = useSelector(
     (state: KanbasState) => state.modulesReducer.module
   );
+
+  const handleAddModule = () => {
+    if (!courseId) return;
+    client.createModule(courseId, module).then((module) => {
+      dispatch(addModule(module));
+    });
+  };
+
+  const handleDeleteModule = (moduleId: string) => {
+    client.deleteModule(moduleId).then((status) => {
+      dispatch(deleteModule(moduleId));
+    });
+  };
+
+  const handleUpdateModule = async () => {
+    const status = await client.updateModule(module);
+    dispatch(updateModule(module));
+  };
 
   const [selectedModule, setSelectedModule] = useState(module);
 
@@ -45,7 +78,7 @@ function ModuleList() {
           <input
             className="form-control my-1"
             value={module.name}
-            onChange={e =>
+            onChange={(e) =>
               dispatch(setModule({ ...module, name: e.target.value }))
             }
           />
@@ -54,7 +87,7 @@ function ModuleList() {
           <textarea
             className="form-control my-1"
             value={module.description}
-            onChange={e =>
+            onChange={(e) =>
               dispatch(setModule({ ...module, description: e.target.value }))
             }
           />
@@ -62,13 +95,13 @@ function ModuleList() {
 
         <div>
           <button
-            onClick={() => dispatch(addModule({ ...module, course: courseId }))}
+            onClick={handleAddModule}
             className="btn btn-sm btn-success me-1"
           >
             Add
           </button>
           <button
-            onClick={() => dispatch(updateModule(module))}
+            onClick={handleUpdateModule}
             className="btn btn-sm btn-secondary ms-1"
           >
             Update
@@ -78,8 +111,8 @@ function ModuleList() {
 
       <ul className="list-group wd-modules mt-5">
         {moduleList
-          .filter(module => module.course === courseId)
-          .map(module => (
+          .filter((module) => module.course === courseId)
+          .map((module) => (
             <li className="list-group-item cursor-pointer" key={module._id}>
               <div className="module-header py-3 bg-light">
                 <span className="me-2 ms-1 cursor-pointer">
@@ -96,7 +129,7 @@ function ModuleList() {
                   )}
                   <span
                     className="fw-bold cursor-pointer"
-                    style={{ marginRight: 'auto' }}
+                    style={{ marginRight: "auto" }}
                   >
                     {module.name}
                   </span>
@@ -111,7 +144,7 @@ function ModuleList() {
                   <button
                     className="btn btn-danger btn-sm rounded-2 p-1 me-2"
                     onClick={() => {
-                      dispatch(deleteModule(module._id));
+                      handleDeleteModule(module._id);
                     }}
                   >
                     Delete
@@ -133,7 +166,7 @@ function ModuleList() {
 
               {selectedModule._id === module._id && (
                 <ul className="list-group">
-                  {module.lessons?.map(lesson => (
+                  {module.lessons?.map((lesson) => (
                     <li className="list-group-items module-li" key={lesson._id}>
                       <div className="py-2">
                         <span className="me-2 ms-1">
