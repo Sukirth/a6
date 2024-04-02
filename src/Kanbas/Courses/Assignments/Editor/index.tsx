@@ -101,7 +101,10 @@ function AssignmentEditor() {
                 value={assignment?.totalPoints}
                 onChange={(e) =>
                   dispatch(
-                    setAssignment({ ...assignment, points: e.target.value })
+                    setAssignment({
+                      ...assignment,
+                      totalPoints: e.target.value,
+                    })
                   )
                 }
               />
