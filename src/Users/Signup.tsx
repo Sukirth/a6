@@ -13,7 +13,7 @@ export default function Signup() {
       await client.signup(user as User);
       navigate("/Kanbas/Account/Profile");
     } catch (err: any) {
-      setError(err.response.data);
+      setError(err.response.data.message);
     }
   };
 

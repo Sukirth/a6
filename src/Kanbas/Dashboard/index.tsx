@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import { PiNotePencil } from 'react-icons/pi';
-import './index.css';
-import { Course } from '../../types';
+import { Link } from "react-router-dom";
+import { PiNotePencil } from "react-icons/pi";
+import "./index.css";
+import { Course } from "../../types";
 
 function Dashboard({
   courses,
@@ -9,7 +9,7 @@ function Dashboard({
   setCourse,
   addNewCourse,
   deleteCourse,
-  updateCourse
+  updateCourse,
 }: {
   courses: Course[];
   course: Course;
@@ -18,32 +18,35 @@ function Dashboard({
   deleteCourse: (courseId: string) => void;
   updateCourse: () => void;
 }) {
+  console.log(course);
   return (
     <div className="p-4">
       <h1>Dashboard</h1> <hr />
       <div style={{ width: 400 }} className="my-3">
         <h4>Add New Course</h4>
         <input
+          placeholder="Course Name"
           value={course.name}
           className="form-control my-1"
-          onChange={e => setCourse({ ...course, name: e.target.value })}
+          onChange={(e) => setCourse({ ...course, name: e.target.value })}
         />
         <input
+          placeholder="Course Number"
           value={course.number}
           className="form-control my-1"
-          onChange={e => setCourse({ ...course, number: e.target.value })}
+          onChange={(e) => setCourse({ ...course, number: e.target.value })}
         />
         <input
-          value={course.startDate}
+          value={course.startDate ? course.startDate.split("T")[0] : ""}
           className="form-control my-1"
           type="date"
-          onChange={e => setCourse({ ...course, startDate: e.target.value })}
+          onChange={(e) => setCourse({ ...course, startDate: e.target.value })}
         />
         <input
-          value={course.endDate}
+          value={course.endDate ? course.endDate.split("T")[0] : ""}
           className="form-control my-1"
           type="date"
-          onChange={e => setCourse({ ...course, endDate: e.target.value })}
+          onChange={(e) => setCourse({ ...course, endDate: e.target.value })}
         />
         <div className="mt-2">
           <button
@@ -64,7 +67,7 @@ function Dashboard({
       <div className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
           {!!courses.length ? (
-            courses.map(course => (
+            courses.map((course) => (
               <div key={course._id} className="col" style={{ width: 300 }}>
                 <div className="card">
                   <div className="d-inline-block position-absolute position-ellipsis fs-24 text-light">
@@ -75,7 +78,7 @@ function Dashboard({
                       src={`/images/${course.image}`}
                       className="card-img-top"
                       style={{ height: 150 }}
-                      alt={course.name + ' image'}
+                      alt={course.name + " image"}
                     />
                   </Link>
                   <div className="card-body">

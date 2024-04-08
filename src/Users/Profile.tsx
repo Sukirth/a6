@@ -148,41 +148,21 @@ export default function Profile() {
               }
             />
           </div>
-          <div className="dropdown dropend">
-            <button
-              className="btn btn-secondary dropdown-toggle"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
+          <div className="my-2">
+            <label htmlFor="role" className="form-label">
+              Role
+            </label>
+            <select
+              id="role"
+              onChange={(e) => setProfile({ ...profile, role: e.target.value })}
+              value={profile.role || "USER"}
+              className="form-control w-100"
             >
-              Role: {profile.role[0] + profile.role.slice(1).toLowerCase()}
-            </button>
-            <ul className="dropdown-menu">
-              <li
-                className="dropdown-item"
-                onClick={() => setProfile({ ...profile, role: "USER" })}
-              >
-                User
-              </li>
-              <li
-                className="dropdown-item"
-                onClick={() => setProfile({ ...profile, role: "ADMIN" })}
-              >
-                Admin
-              </li>
-              <li
-                className="dropdown-item"
-                onClick={() => setProfile({ ...profile, role: "FACULTY" })}
-              >
-                Faculty
-              </li>
-              <li
-                className="dropdown-item"
-                onClick={() => setProfile({ ...profile, role: "STUDENT" })}
-              >
-                Student
-              </li>
-            </ul>
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
+              <option value="FACULTY">Faculty</option>
+              <option value="STUDENT">Student</option>
+            </select>
           </div>
         </div>
         // </div>

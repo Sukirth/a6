@@ -27,9 +27,9 @@ function Kanbas() {
   const [course, setCourse] = useState({
     _id: "1234",
     name: "New Course",
-    number: "New Number",
-    startDate: "2023-09-10",
-    endDate: "2023-12-15",
+    number: "New Course Number",
+    startDate: new Date().toISOString().split("T")[0],
+    endDate: new Date().toISOString().split("T")[0],
     image: "default.png",
   });
 
@@ -82,10 +82,9 @@ function Kanbas() {
         <KanbasNavigation />
         <div style={{ flexGrow: 1 }}>
           <Routes>
-            <Route path="/Dashboard" element={<Navigate to="Dashboard" />} />
             <Route path="/Account/*" element={<Account />} />
             <Route
-              path="Dashboard"
+              path="/Dashboard"
               element={
                 <Dashboard
                   courses={courses}
