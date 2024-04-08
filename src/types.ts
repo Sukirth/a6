@@ -35,3 +35,12 @@ export interface Assignment {
   availableUntilDate: string | null;
   published: boolean;
 }
+
+export interface User {
+  _id: string;
+  username: string;
+  password: string;
+  role: string;
+  firstName: string;
+  lastName: string;
+}

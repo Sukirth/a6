@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import store from "./store";
 import { Provider } from "react-redux";
 import Dashboard from "./Dashboard";
+import Account from "./Account";
 import Courses from "./Courses";
 import { useEffect, useState } from "react";
 import { Course } from "../types";
@@ -81,8 +82,8 @@ function Kanbas() {
         <KanbasNavigation />
         <div style={{ flexGrow: 1 }}>
           <Routes>
-            <Route path="/" element={<Navigate to="Dashboard" />} />
-            <Route path="Account" element={<h1>Account</h1>} />
+            <Route path="/Dashboard" element={<Navigate to="Dashboard" />} />
+            <Route path="/Account/*" element={<Account />} />
             <Route
               path="Dashboard"
               element={
