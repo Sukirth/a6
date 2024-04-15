@@ -69,7 +69,7 @@ function Dashboard({
           {!!courses.length ? (
             courses.map((course) => (
               <div key={course._id} className="col" style={{ width: 300 }}>
-                <div className="card">
+                <div className="card" style={{ height: 360 }}>
                   <div className="d-inline-block position-absolute position-ellipsis fs-24 text-light">
                     <i className="fa fa-ellipsis-v" />
                   </div>
